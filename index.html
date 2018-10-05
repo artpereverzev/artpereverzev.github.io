@@ -7,6 +7,17 @@
     <script type="text/javascript" src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
     <style>
 		
+		#mainContainer {
+			margin-left: 50px;
+			margin-right: 50px;
+			background-color: #FBF6FE;
+			position: absolute;
+			width: 700px;
+			height: 400px;
+			box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+			border-radius: 25px;
+		}
+		
 		.slider_container {
 			margin: 100px;
 		}
@@ -284,19 +295,21 @@
 			alert('Hello! Script was loaded!');
 		};
 	</script>
-	<div class="value_show">0 0</div>
-	<div class="slider_container">
-		<div id="slider_1" class="slider_class">
-			<div class="arrow-left-class">
-				<i class="arrow left"></i>
-			</div>
-			<div class="slider_color"></div>
-			<div class="show_sl" value=""><img src="https://ubisafe.org/images/unicorn-svg-3.png" style="position: relative;width: 100px;"></div>
-			<div class="arrow-right-class">
-				<i class="arrow right"></i>
-			</div>
-			<div class="container_slider_labels">
-				<!----place for labels which are generating automatically---->
+	<div id="mainContainer">
+		<div class="value_show">0 0</div>
+		<div class="slider_container">
+			<div id="slider_1" class="slider_class">
+				<div class="arrow-left-class">
+					<i class="arrow left"></i>
+				</div>
+				<div class="slider_color"></div>
+				<div class="show_sl" value=""><img src="https://ubisafe.org/images/unicorn-svg-3.png" style="position: relative;width: 100px;"></div>
+				<div class="arrow-right-class">
+					<i class="arrow right"></i>
+				</div>
+				<div class="container_slider_labels">
+					<!----place for labels which are generating automatically---->
+				</div>
 			</div>
 		</div>
 	</div>
