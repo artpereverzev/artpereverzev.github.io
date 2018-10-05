@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Slider</title>
+	<script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.js"></script>
+    <script type="text/javascript" src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+    <style>
+		
+		.slider_container {
+			margin: 100px;
+		}
+		
+		#slider_1 {
+			cursor: pointer;
+			position: absolute;
+			height: 15px;
+			width: 500px;
+			background-color: #eee;
+			border-style: solid;
+			border-width: 1px;
+			border-color: #dddddd;
+			border-radius: 4px;
+		}
+
+		.show_sl {
+			position: absolute;
+			cursor: pointer;
+			height: 20px;
+			width: 10px;
+			border-style: solid;
+			border-width: 1px;
+			border-color: #00ddd7;
+			border-radius: 4px;
+			background-color: #bee6e5;
+			margin-top: -3px;
+			margin-left: 0px;
+		}
+		
+		.slider_color {
+			position: absolute;
+			height: 15px;
+			background-color: #49bfbc;
+			background-image: linear-gradient(to right, red,orange,yellow,green,blue,indigo,violet);
+			border-radius: 4px 0px 0px 4px;
+		}
+		
+		.slider_label {
+			text-align: center;
+			color: #555;
+			font-size: 13px;
+			font-family: 'Trebuchet MS', Helvetica, sans-serif;
+		}
+		
+		i {
+			border: solid black;
+			border-color: #49bfbc;
+			border-width: 0 7px 7px 0;
+			display: inline-block;
+			padding: 7px;
+		}
+		
+		.right {
+			margin-top: -3px;
+			margin-left: 502px;
+			position: absolute;
+			transform: rotate(-45deg);
+			-webkit-transform: rotate(-45deg);
+		}
+
+		.left {
+			margin-top: -3px;
+			margin-left: -20px;
+			position: absolute;
+			transform: rotate(135deg);
+			-webkit-transform: rotate(135deg);
+		}
+		
+    </style>
+	<!--<script type="text/javascript" src="C:\Users\Artem.Pereverzev\Desktop\new_1.js"></script>-->
+</head>
+<body>
+	<script>
+		window.onload = function() {
+			
+			var default_value = 0;
+			var count_value = 1;
+			var rightPressed = false;
+			var leftPressed = false;
+			var mousePressed = false;
+			var margin_slider = 0;
+			var margin_slider_dx = 50;//default value 10
+			var main_slider_width = parseInt($('#slider_1').css('width'));
+			var slider_width = parseInt($('.slider_class').css('width'));
+			var show_sl_width = parseInt($('.show_sl').css('width'));
+			var width_slider_color;
+			var areas_count = main_slider_width / margin_slider_dx;
+			var segment_size = main_slider_width / areas_count; // segment's size
+			var select_slider_labels = $('.container_slider_labels');
+			var slider_current_position;
+			var round_slider_current_position;
+			var final_margin_key;
+			var final_margin_mouse;
+			var final_value_key;
+			var final_value_mouse;
+			var mouse_status = false;
+			var key_status = false;
+			var mouseClick = false;
+			var arrowPressed_right = false;
+			var arrowPressed_left = false;
+
+			document.addEventListener("keydown", keyDownHandler, false);
+			document.addEventListener("keyup", keyUpHandler, false);
+			//document.addEventListener("mousedown", mouseDownHandler, false);
+			//document.addEventListener("mouseup", mouseUpHandler, false);
+			$('#slider_1').mousedown(mouseDownHandler);
+			$('#slider_1').mouseup(mouseUpHandler);
+	
+			$('.arrow-left-class').mousedown(arrowDownHandler_left);
+			$('.arrow-left-class').mouseup(arrowUpHandler_left);
+			$('.arrow-right-class').mousedown(arrowDownHandler_right);
+			$('.arrow-right-class').mouseup(arrowUpHandler_right);			
+			
+			function arrowDownHandler_left() {
+				arrowPressed_left = true;
+				slider_move(final_value_mouse, final_margin_mouse);
+			};
+			
+			function arrowUpHandler_left() {
+				arrowPressed_left = false;
+				slider_move(final_value_mouse, final_margin_mouse);
+			};
+
+			function arrowDownHandler_right() {
+				arrowPressed_right = true;
+				slider_move(final_value_mouse, final_margin_mouse);
+			};
+			
+			function arrowUpHandler_right() {
+				arrowPressed_right = false;
+				slider_move(final_value_mouse, final_margin_mouse);
+			};
+			
+			function mouseDownHandler() {
+				mousePressed = true;
+				mouseClick = true;
+				find_x_coord_slider(final_value_key);
+			};
+			
+			function mouseUpHandler() {
+				mousePressed = false;
+				find_x_coord_slider(final_value_key);
+			};
+
+			function keyDownHandler(e){
+				if(e.keyCode == 39) {
+					rightPressed = true;
+				}
+				else if(e.keyCode == 37) {
+					leftPressed = true;
+				};
+				slider_move(final_value_mouse, final_margin_mouse);
+			};
+			
+			function keyUpHandler(e){
+				if(e.keyCode == 39) {
+					rightPressed = false;
+				}
+				else if(e.keyCode == 37) {
+					leftPressed = false;
+				};
+				slider_move(final_value_mouse, final_margin_mouse);
+			};
+				
+			function add_segments_labels() {
+				if(areas_count > 0) {
+					for(var i = 0; i <= areas_count; i++) {
+						select_slider_labels.append("<div class='slider_label' style='margin-left:" + margin_slider_dx * i + "px; position: absolute; margin-top: 20px;'>" + i + "</div>");	
+					};
+				}
+				else {
+					return;
+				};
+			};	
+			
+			//default settings for arrows
+			$('.left').css({'border-color':'#ececec'});
+			$('.left').css({'cursor':'default'});
+			
+			function check_arrow_color(count_marg, main_marg) {
+				if(count_marg == main_marg - show_sl_width){
+					$('.right').css({'border-color':'#ececec'});
+					$('.right').css({'cursor':'default'});
+				}
+				else{
+					$('.right').css({'border-color':'#49bfbc'});
+					$('.right').css({'cursor':'pointer'});
+				};
+				if(count_marg == 0){
+					$('.left').css({'border-color':'#ececec'});
+					$('.left').css({'cursor':'default'});
+				}
+				else{
+					$('.left').css({'border-color':'#49bfbc'});
+					$('.left').css({'cursor':'pointer'});
+				};
+			};
+			
+			function find_x_coord_slider(val) {
+				if( val != null & key_status) {
+					default_value = val;
+				};
+				key_status = false;
+				var example = document.getElementById('slider_1'); 
+				example.onmousemove = function(e) { 
+					var x = e.pageX - this.offsetLeft; 
+					//var y = e.pageY - this.offsetTop;
+					if(x <= main_slider_width & x > 0){ // && old
+						slider_current_position = x / margin_slider_dx;
+						round_slider_current_position = Math.round(slider_current_position);
+						if(mousePressed || mouseClick) {
+							mouseClick = false;
+							$('.show_sl').attr('value', round_slider_current_position);
+							$('.slider_color').css({'width':'' + round_slider_current_position * margin_slider_dx + 'px'});
+							if(areas_count == round_slider_current_position) {
+								$('.show_sl').css({'marginLeft':'' + round_slider_current_position * margin_slider_dx - show_sl_width + 'px'});
+							} 
+							else{
+								$('.show_sl').css({'marginLeft':'' + round_slider_current_position * margin_slider_dx + 'px'});
+							};
+							final_value_mouse = parseInt($('.show_sl').attr('value'));
+							final_margin_mouse = parseInt($('.show_sl').css('marginLeft'));
+							mouse_status = true;
+							check_arrow_color(final_margin_mouse, main_slider_width);
+							$('.value_show').text(final_value_mouse+' '+final_margin_mouse);
+						};
+					}
+					else {
+						return;
+					};
+				};
+			};
+							
+			function slider_move(val, marg){
+				if(val != null & marg != null & mouse_status) {
+					default_value = val;
+					margin_slider = marg;
+				};
+				mouse_status = false;
+				if(arrowPressed_right != true) {
+					$('.show_sl').attr('value', default_value);//old version
+				};
+				if((rightPressed | arrowPressed_right) & margin_slider < slider_width - show_sl_width) {// &&
+					margin_slider += margin_slider_dx;
+					default_value += count_value;
+					$('.show_sl').css({'marginLeft':'' + margin_slider + 'px'});
+					width_slider_color = (parseInt($('.show_sl').css('marginLeft')) + show_sl_width);
+					if(width_slider_color >= main_slider_width){
+						$('.slider_color').css({'width':'' + main_slider_width + 'px'});
+						$('.show_sl').css({'marginLeft':'' + main_slider_width - show_sl_width + 'px'});
+					}
+					else{
+						$('.slider_color').css({'width':'' + width_slider_color + 'px'});
+						$('.show_sl').css({'marginLeft':'' + width_slider_color - show_sl_width + 'px'});
+					};
+					key_status = true;
+				};
+				if((leftPressed | arrowPressed_left) & margin_slider > 0) {// &&
+					margin_slider -= margin_slider_dx;
+					$('.show_sl').css({'marginLeft':'' + margin_slider + 'px'});
+					default_value -= count_value;
+					width_slider_color = (parseInt($('.show_sl').css('marginLeft')) + show_sl_width);
+					$('.slider_color').css({'width':'' + width_slider_color - show_sl_width + 'px'});
+					key_status = true;
+				};
+				final_value_key = parseInt($('.show_sl').attr('value'));
+				final_margin_key = parseInt($('.show_sl').css('marginLeft'));
+				check_arrow_color(final_margin_key, main_slider_width);
+				$('.value_show').text(final_value_key+' '+final_margin_key);
+			};
+			
+			add_segments_labels();
+			
+			alert('Hello! Script was loaded!');
+		};
+	</script>
+	<div class="value_show">0 0</div>
+	<div class="slider_container">
+		<div id="slider_1" class="slider_class">
+			<div class="arrow-left-class">
+				<i class="arrow left"></i>
+			</div>
+			<div class="slider_color"></div>
+			<div class="show_sl" value=""><img src="https://ubisafe.org/images/unicorn-svg-3.png" style="position: relative;width: 100px;"></div>
+			<div class="arrow-right-class">
+				<i class="arrow right"></i>
+			</div>
+			<div class="container_slider_labels">
+				<!----place for labels which are generating automatically---->
+			</div>
+		</div>
+	</div>
+</body>
+</html>
