@@ -11,7 +11,7 @@
 			margin-left: 50px;
 			margin-right: 50px;
 			background-color: #FBF6FE;
-			position: absolute;
+			position: relative;
 			width: 700px;
 			height: 400px;
 			box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
@@ -35,7 +35,8 @@
 		}
 
 		.show_sl {
-			position: absolute;
+			position: relative;
+			float: right;
 			cursor: pointer;
 			height: 20px;
 			width: 10px;
@@ -102,7 +103,8 @@
 			var margin_slider = 0;
 			var margin_slider_dx = 50;//default value 10
 			var main_slider_width = parseInt($('#slider_1').css('width'));
-			var slider_width = parseInt($('.slider_class').css('width'));
+			//var slider_width = parseInt($('.slider_class').css('width'));
+			var slider_width = 100;
 			var show_sl_width = parseInt($('.show_sl').css('width'));
 			var width_slider_color;
 			var areas_count = main_slider_width / margin_slider_dx;
@@ -119,7 +121,11 @@
 			var mouseClick = false;
 			var arrowPressed_right = false;
 			var arrowPressed_left = false;
-
+			
+			var newWidth = 0;
+			var newWidth_dx = 1;
+			
+			
 			document.addEventListener("keydown", keyDownHandler, false);
 			document.addEventListener("keyup", keyUpHandler, false);
 			//document.addEventListener("mousedown", mouseDownHandler, false);
@@ -186,7 +192,7 @@
 			function add_segments_labels() {
 				if(areas_count > 0) {
 					for(var i = 0; i <= areas_count; i++) {
-						select_slider_labels.append("<div class='slider_label' style='margin-left:" + margin_slider_dx * i + "px; position: absolute; margin-top: 20px;'>" + i + "</div>");	
+						//select_slider_labels.append("<div class='slider_label' style='margin-left:" + margin_slider_dx * i + "px; position: absolute; margin-top: 20px;'>" + i + "</div>");	
 					};
 				}
 				else {
@@ -224,26 +230,24 @@
 				key_status = false;
 				var example = document.getElementById('slider_1'); 
 				example.onmousemove = function(e) { 
-					var x = e.pageX - this.offsetLeft; 
+					var x = (e.pageX - this.offsetLeft) / 5; 
+					x = x - 10;
 					//var y = e.pageY - this.offsetTop;
-					if(x <= main_slider_width & x > 0){ // && old
-						slider_current_position = x / margin_slider_dx;
+					//if(x <= main_slider_width & x > 0){ // && old
+					if(x <= 100 & x > 0){
+						//slider_current_position = x / margin_slider_dx;
+						slider_current_position = x;
 						round_slider_current_position = Math.round(slider_current_position);
 						if(mousePressed || mouseClick) {
 							mouseClick = false;
 							$('.show_sl').attr('value', round_slider_current_position);
-							$('.slider_color').css({'width':'' + round_slider_current_position * margin_slider_dx + 'px'});
-							if(areas_count == round_slider_current_position) {
-								$('.show_sl').css({'marginLeft':'' + round_slider_current_position * margin_slider_dx - show_sl_width + 'px'});
-							} 
-							else{
-								$('.show_sl').css({'marginLeft':'' + round_slider_current_position * margin_slider_dx + 'px'});
-							};
+							//$('.slider_color').css({'width':'' + round_slider_current_position * margin_slider_dx + 'px'});
+							newWidth = round_slider_current_position * newWidth_dx;
+							$('.slider_color').css({'width':'' + newWidth + '%'});
 							final_value_mouse = parseInt($('.show_sl').attr('value'));
-							final_margin_mouse = parseInt($('.show_sl').css('marginLeft'));
 							mouse_status = true;
 							check_arrow_color(final_margin_mouse, main_slider_width);
-							$('.value_show').text(final_value_mouse+' '+final_margin_mouse);
+							$('.value_show').text(final_value_mouse + ' new width value: ' + newWidth + '; x =' + round_slider_current_position);
 						};
 					}
 					else {
@@ -261,33 +265,28 @@
 				if(arrowPressed_right != true) {
 					$('.show_sl').attr('value', default_value);//old version
 				};
-				if((rightPressed | arrowPressed_right) & margin_slider < slider_width - show_sl_width) {// &&
-					margin_slider += margin_slider_dx;
+				if((rightPressed | arrowPressed_right) & newWidth < 100) {
+					newWidth += newWidth_dx;
 					default_value += count_value;
-					$('.show_sl').css({'marginLeft':'' + margin_slider + 'px'});
-					width_slider_color = (parseInt($('.show_sl').css('marginLeft')) + show_sl_width);
+					width_slider_color = newWidth;
 					if(width_slider_color >= main_slider_width){
-						$('.slider_color').css({'width':'' + main_slider_width + 'px'});
-						$('.show_sl').css({'marginLeft':'' + main_slider_width - show_sl_width + 'px'});
+						$('.slider_color').css({'width':'100%'});
 					}
 					else{
-						$('.slider_color').css({'width':'' + width_slider_color + 'px'});
-						$('.show_sl').css({'marginLeft':'' + width_slider_color - show_sl_width + 'px'});
+						$('.slider_color').css({'width':'' + width_slider_color + '%'});
 					};
 					key_status = true;
 				};
-				if((leftPressed | arrowPressed_left) & margin_slider > 0) {// &&
-					margin_slider -= margin_slider_dx;
-					$('.show_sl').css({'marginLeft':'' + margin_slider + 'px'});
+				if((leftPressed | arrowPressed_left) & newWidth > 0) {
+					newWidth -= newWidth_dx;
 					default_value -= count_value;
-					width_slider_color = (parseInt($('.show_sl').css('marginLeft')) + show_sl_width);
-					$('.slider_color').css({'width':'' + width_slider_color - show_sl_width + 'px'});
+					$('.slider_color').css({'width':'' + newWidth + '%'});
 					key_status = true;
 				};
 				final_value_key = parseInt($('.show_sl').attr('value'));
-				final_margin_key = parseInt($('.show_sl').css('marginLeft'));
+				//final_margin_key = parseInt($('.slider_color').css('width'));
 				check_arrow_color(final_margin_key, main_slider_width);
-				$('.value_show').text(final_value_key+' '+final_margin_key);
+				$('.value_show').text(final_value_key + ' new width value: ' + newWidth);
 			};
 			
 			add_segments_labels();
@@ -296,14 +295,17 @@
 		};
 	</script>
 	<div id="mainContainer">
-		<div class="value_show">0 0</div>
+		<div class="value_show">0 0 new width value: 0</div>
 		<div class="slider_container">
 			<div id="slider_1" class="slider_class">
 				<div class="arrow-left-class">
 					<i class="arrow left"></i>
 				</div>
-				<div class="slider_color"></div>
-				<div class="show_sl" value=""><img src="https://ubisafe.org/images/unicorn-svg-3.png" style="position: relative;width: 100px;"></div>
+				<div class="slider_color">
+					<div class="show_sl" value="">
+						<img src="https://ubisafe.org/images/unicorn-svg-3.png" style="position: relative;width: 100px;">
+					</div>
+				</div>				
 				<div class="arrow-right-class">
 					<i class="arrow right"></i>
 				</div>
