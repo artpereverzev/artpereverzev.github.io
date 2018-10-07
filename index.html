@@ -5,312 +5,79 @@
     <title>Slider</title>
 	<script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.js"></script>
     <script type="text/javascript" src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
-    <style>
-		
-		#mainContainer {
-			margin-left: 50px;
-			margin-right: 50px;
-			background-color: #FBF6FE;
-			position: relative;
-			width: 700px;
-			height: 400px;
-			box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
-			border-radius: 25px;
-		}
-		
-		.slider_container {
-			margin: 100px;
-		}
-		
-		#slider_1 {
-			cursor: pointer;
-			position: absolute;
-			height: 15px;
-			width: 500px;
-			background-color: #eee;
-			border-style: solid;
-			border-width: 1px;
-			border-color: #dddddd;
-			border-radius: 4px;
-		}
-
-		.show_sl {
-			position: relative;
-			float: right;
-			cursor: pointer;
-			height: 20px;
-			width: 10px;
-			border-style: solid;
-			border-width: 1px;
-			border-color: #00ddd7;
-			border-radius: 4px;
-			background-color: #bee6e5;
-			margin-top: -3px;
-			margin-left: 0px;
-		}
-		
-		.slider_color {
-			position: absolute;
-			height: 15px;
-			background-color: #49bfbc;
-			background-image: linear-gradient(to right, red,orange,yellow,green,blue,indigo,violet);
-			border-radius: 4px 0px 0px 4px;
-		}
-		
-		.slider_label {
-			text-align: center;
-			color: #555;
-			font-size: 13px;
-			font-family: 'Trebuchet MS', Helvetica, sans-serif;
-		}
-		
-		i {
-			border: solid black;
-			border-color: #49bfbc;
-			border-width: 0 7px 7px 0;
-			display: inline-block;
-			padding: 7px;
-		}
-		
-		.right {
-			margin-top: -3px;
-			margin-left: 502px;
-			position: absolute;
-			transform: rotate(-45deg);
-			-webkit-transform: rotate(-45deg);
-		}
-
-		.left {
-			margin-top: -3px;
-			margin-left: -20px;
-			position: absolute;
-			transform: rotate(135deg);
-			-webkit-transform: rotate(135deg);
-		}
-		
-    </style>
+	<script type="text/javascript" src="js/slider.js"></script>
+ 	<link rel="stylesheet" href="css/styles.css">
 	<!--<script type="text/javascript" src="C:\Users\Artem.Pereverzev\Desktop\new_1.js"></script>-->
 </head>
 <body>
-	<script>
-		window.onload = function() {
+	<div id="wrapper">
+		<div id="header">This is header</div>
+		<div id="container">
+			<div id="containerRight">
+				<ul>
+					<li><a href="#home">Home</a></li>
+					<li><a href="#news">News</a></li>
+					<li><a href="#contact">Contact</a></li>
+					<li><a href="#about">About</a></li>
+				</ul>
+			</div>
 			
-			var default_value = 0;
-			var count_value = 1;
-			var rightPressed = false;
-			var leftPressed = false;
-			var mousePressed = false;
-			var margin_slider = 0;
-			var margin_slider_dx = 50;//default value 10
-			var main_slider_width = parseInt($('#slider_1').css('width'));
-			//var slider_width = parseInt($('.slider_class').css('width'));
-			var slider_width = 100;
-			var show_sl_width = parseInt($('.show_sl').css('width'));
-			var width_slider_color;
-			var areas_count = main_slider_width / margin_slider_dx;
-			var segment_size = main_slider_width / areas_count; // segment's size
-			var select_slider_labels = $('.container_slider_labels');
-			var slider_current_position;
-			var round_slider_current_position;
-			var final_margin_key;
-			var final_margin_mouse;
-			var final_value_key;
-			var final_value_mouse;
-			var mouse_status = false;
-			var key_status = false;
-			var mouseClick = false;
-			var arrowPressed_right = false;
-			var arrowPressed_left = false;
-			
-			var newWidth = 0;
-			var newWidth_dx = 1;
-			
-			
-			document.addEventListener("keydown", keyDownHandler, false);
-			document.addEventListener("keyup", keyUpHandler, false);
-			//document.addEventListener("mousedown", mouseDownHandler, false);
-			//document.addEventListener("mouseup", mouseUpHandler, false);
-			$('#slider_1').mousedown(mouseDownHandler);
-			$('#slider_1').mouseup(mouseUpHandler);
-	
-			$('.arrow-left-class').mousedown(arrowDownHandler_left);
-			$('.arrow-left-class').mouseup(arrowUpHandler_left);
-			$('.arrow-right-class').mousedown(arrowDownHandler_right);
-			$('.arrow-right-class').mouseup(arrowUpHandler_right);			
-			
-			function arrowDownHandler_left() {
-				arrowPressed_left = true;
-				slider_move(final_value_mouse, final_margin_mouse);
-			};
-			
-			function arrowUpHandler_left() {
-				arrowPressed_left = false;
-				slider_move(final_value_mouse, final_margin_mouse);
-			};
-
-			function arrowDownHandler_right() {
-				arrowPressed_right = true;
-				slider_move(final_value_mouse, final_margin_mouse);
-			};
-			
-			function arrowUpHandler_right() {
-				arrowPressed_right = false;
-				slider_move(final_value_mouse, final_margin_mouse);
-			};
-			
-			function mouseDownHandler() {
-				mousePressed = true;
-				mouseClick = true;
-				find_x_coord_slider(final_value_key);
-			};
-			
-			function mouseUpHandler() {
-				mousePressed = false;
-				find_x_coord_slider(final_value_key);
-			};
-
-			function keyDownHandler(e){
-				if(e.keyCode == 39) {
-					rightPressed = true;
-				}
-				else if(e.keyCode == 37) {
-					leftPressed = true;
-				};
-				slider_move(final_value_mouse, final_margin_mouse);
-			};
-			
-			function keyUpHandler(e){
-				if(e.keyCode == 39) {
-					rightPressed = false;
-				}
-				else if(e.keyCode == 37) {
-					leftPressed = false;
-				};
-				slider_move(final_value_mouse, final_margin_mouse);
-			};
-				
-			function add_segments_labels() {
-				if(areas_count > 0) {
-					for(var i = 0; i <= areas_count; i++) {
-						//select_slider_labels.append("<div class='slider_label' style='margin-left:" + margin_slider_dx * i + "px; position: absolute; margin-top: 20px;'>" + i + "</div>");	
-					};
-				}
-				else {
-					return;
-				};
-			};	
-			
-			//default settings for arrows
-			$('.left').css({'border-color':'#ececec'});
-			$('.left').css({'cursor':'default'});
-			
-			function check_arrow_color(count_marg, main_marg) {
-				if(count_marg == main_marg - show_sl_width){
-					$('.right').css({'border-color':'#ececec'});
-					$('.right').css({'cursor':'default'});
-				}
-				else{
-					$('.right').css({'border-color':'#49bfbc'});
-					$('.right').css({'cursor':'pointer'});
-				};
-				if(count_marg == 0){
-					$('.left').css({'border-color':'#ececec'});
-					$('.left').css({'cursor':'default'});
-				}
-				else{
-					$('.left').css({'border-color':'#49bfbc'});
-					$('.left').css({'cursor':'pointer'});
-				};
-			};
-			
-			function find_x_coord_slider(val) {
-				if( val != null & key_status) {
-					default_value = val;
-				};
-				key_status = false;
-				var example = document.getElementById('slider_1'); 
-				example.onmousemove = function(e) { 
-					var x = (e.pageX - this.offsetLeft) / 5; 
-					x = x - 10;
-					//var y = e.pageY - this.offsetTop;
-					//if(x <= main_slider_width & x > 0){ // && old
-					if(x <= 100 & x > 0){
-						//slider_current_position = x / margin_slider_dx;
-						slider_current_position = x;
-						round_slider_current_position = Math.round(slider_current_position);
-						if(mousePressed || mouseClick) {
-							mouseClick = false;
-							$('.show_sl').attr('value', round_slider_current_position);
-							//$('.slider_color').css({'width':'' + round_slider_current_position * margin_slider_dx + 'px'});
-							newWidth = round_slider_current_position * newWidth_dx;
-							$('.slider_color').css({'width':'' + newWidth + '%'});
-							final_value_mouse = parseInt($('.show_sl').attr('value'));
-							mouse_status = true;
-							check_arrow_color(final_margin_mouse, main_slider_width);
-							$('.value_show').text(final_value_mouse + ' new width value: ' + newWidth + '; x =' + round_slider_current_position);
-						};
-					}
-					else {
-						return;
-					};
-				};
-			};
-							
-			function slider_move(val, marg){
-				if(val != null & marg != null & mouse_status) {
-					default_value = val;
-					margin_slider = marg;
-				};
-				mouse_status = false;
-				if(arrowPressed_right != true) {
-					$('.show_sl').attr('value', default_value);//old version
-				};
-				if((rightPressed | arrowPressed_right) & newWidth < 100) {
-					newWidth += newWidth_dx;
-					default_value += count_value;
-					width_slider_color = newWidth;
-					if(width_slider_color >= main_slider_width){
-						$('.slider_color').css({'width':'100%'});
-					}
-					else{
-						$('.slider_color').css({'width':'' + width_slider_color + '%'});
-					};
-					key_status = true;
-				};
-				if((leftPressed | arrowPressed_left) & newWidth > 0) {
-					newWidth -= newWidth_dx;
-					default_value -= count_value;
-					$('.slider_color').css({'width':'' + newWidth + '%'});
-					key_status = true;
-				};
-				final_value_key = parseInt($('.show_sl').attr('value'));
-				//final_margin_key = parseInt($('.slider_color').css('width'));
-				check_arrow_color(final_margin_key, main_slider_width);
-				$('.value_show').text(final_value_key + ' new width value: ' + newWidth);
-			};
-			
-			add_segments_labels();
-			
-			alert('Hello! Script was loaded!');
-		};
-	</script>
-	<div id="mainContainer">
-		<div class="value_show">0 0 new width value: 0</div>
-		<div class="slider_container">
-			<div id="slider_1" class="slider_class">
-				<div class="arrow-left-class">
-					<i class="arrow left"></i>
-				</div>
-				<div class="slider_color">
-					<div class="show_sl" value="">
-						<img src="https://ubisafe.org/images/unicorn-svg-3.png" style="position: relative;width: 100px;">
+			<div id="photoSlider">
+				<!-- Slideshow container -->
+				<div class="slideshow-container">
+					<!-- Full-width images with number and caption text -->
+					<div class="mySlides fade">
+						<div class="numbertext">1 / 3</div>
+						<img src="https://www.w3schools.com/howto/img_nature_wide.jpg" style="width:100%">
+						<div class="text">Caption Text</div>
 					</div>
-				</div>				
-				<div class="arrow-right-class">
-					<i class="arrow right"></i>
+
+					<div class="mySlides fade">
+						<div class="numbertext">2 / 3</div>
+						<img src="https://www.w3schools.com/howto/img_snow_wide.jpg" style="width:100%">
+						<div class="text">Caption Two</div>
+					</div>
+
+					<div class="mySlides fade">
+						<div class="numbertext">3 / 3</div>
+						<img src="https://www.w3schools.com/howto/img_lights_wide.jpg" style="width:100%">
+						<div class="text">Caption Three</div>
+					</div>
+
+					<!-- Next and previous buttons -->
+					<a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+					<a class="next" onclick="plusSlides(1)">&#10095;</a>
 				</div>
-				<div class="container_slider_labels">
-					<!----place for labels which are generating automatically---->
+				<br>
+
+				<!-- The dots/circles -->
+				<div style="text-align:center">
+					<span class="dot" onclick="currentSlide(1)"></span> 
+					<span class="dot" onclick="currentSlide(2)"></span> 
+					<span class="dot" onclick="currentSlide(3)"></span> 
+				</div>
+			</div>
+			<script type="text/javascript" src="js/photoslider.js"></script>
+		</div>
+		<div id="footer">This is footer</div>
+		<div id="mainContainer">
+			<!--<div class="value_show">0 0 new width value: 0</div>-->
+			<div class="slider_container">
+				<div id="slider_1" class="slider_class" style="margin-top: 23%">
+					<div class="arrow-left-class">
+						<i class="arrow left"></i>
+					</div>
+					<div class="slider_color">
+						<div class="show_sl" value="">
+							<img src="https://ubisafe.org/images/unicorn-svg-3.png" style="position: relative;width: 100px;margin-top: 25px;">
+						</div>
+					</div>				
+					<div class="arrow-right-class">
+						<i class="arrow right"></i>
+					</div>
+					<div class="container_slider_labels">
+						<!----place for labels which are generating automatically---->
+					</div>
 				</div>
 			</div>
 		</div>
