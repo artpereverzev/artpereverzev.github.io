@@ -195,5 +195,5 @@
 			
 			add_segments_labels();
 			
-			alert('Hello! Script was loaded!');
+			//alert('Hello! Script was loaded!');
 		};
