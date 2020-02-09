@@ -1,15 +1,16 @@
 {
-  "name": "socket.io-chat",
-  "version": "0.0.0",
-  "description": "A simple chat client using socket.io",
-  "main": "index.js",
-  "author": "Grant Timmerman",
-  "private": true,
-  "license": "BSD",
-  "dependencies": {
-    "express": "4.13.4"
-  },
+  "name": "nodetextapp",
+  "version": "1.0.0",
+  "description": "Node.js Nexmo API Testing",
+  "main": "app.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node app"
+  },
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "ejs": "^2.7.4",
+    "express": "^4.17.1",
+    "nexmo": "^2.6.0-beta-1",
+    "socket.io": "^2.3.0"
   }
 }
